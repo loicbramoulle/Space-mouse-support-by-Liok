@@ -371,6 +371,15 @@ func _on_speed_scale_reset() -> void:
 
 # --- bridge process management ---
 
+func _bridge_exe_path() -> String:
+	# Standalone build of the bridge (Python and hidapi bundled), preferred when present.
+	var script_dir: String = (get_script() as Script).resource_path.get_base_dir()
+	var exe := script_dir + "/bin/spacemouse_bridge.exe"
+	if OS.get_name() == "Windows" and FileAccess.file_exists(exe):
+		return ProjectSettings.globalize_path(exe)
+	return ""
+
+
 func _bridge_script_path() -> String:
 	var script_dir: String = (get_script() as Script).resource_path.get_base_dir()
 	var candidates: Array[String] = [
@@ -395,11 +404,17 @@ func _autostart_bridge() -> void:
 func _start_bridge() -> void:
 	if bridge_pid > 0 and OS.is_process_running(bridge_pid):
 		return
+	# No console window: create_process defaults to open_console = false.
+	var exe_path := _bridge_exe_path()
+	if exe_path != "":
+		bridge_pid = OS.create_process(exe_path, PackedStringArray())
+		if bridge_pid > 0:
+			bridge_status_label.text = "bridge: running (hidden, pid %d)" % bridge_pid
+			return
 	var script_path := _bridge_script_path()
 	if script_path == "":
-		bridge_status_label.text = "bridge: script not found (keep the python_bridge folder inside the addon folder)"
+		bridge_status_label.text = "bridge: script not found (keep the bin and python_bridge folders inside the addon folder)"
 		return
-	# No console window: create_process defaults to open_console = false.
 	bridge_pid = OS.create_process("py", PackedStringArray(["-3", script_path]))
 	if bridge_pid <= 0:
 		bridge_pid = OS.create_process("python", PackedStringArray([script_path]))
@@ -427,7 +442,10 @@ func _stop_bridge() -> void:
 func _update_bridge_status() -> void:
 	if bridge_pid > 0 and not OS.is_process_running(bridge_pid):
 		bridge_pid = -1
-		bridge_status_label.text = "bridge: exited right away - run python_bridge/install_requirements.bat once, then press Start bridge"
+		if _bridge_exe_path() != "":
+			bridge_status_label.text = "bridge: exited right away - check that bin/spacemouse_bridge.exe is not blocked by your antivirus, then press Start bridge"
+		else:
+			bridge_status_label.text = "bridge: exited right away - run python_bridge/install_requirements.bat once, then press Start bridge"
 
 
 func _process(delta: float) -> void:

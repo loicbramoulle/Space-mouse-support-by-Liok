@@ -1,4 +1,4 @@
-# SpaceMouse Godot Bridge v1.0.1
+# SpaceMouse Godot Bridge v1.0.2
 
 Use a 3Dconnexion SpaceMouse for six-axis navigation in the Godot 4 editor.
 The bridge reads the standard multi-axis HID interface directly and sends
@@ -6,7 +6,7 @@ normalized motion to Godot over localhost UDP. Blender and 3DxWare can keep
 working in parallel. The legacy TDxInput COM interface remains a fallback.
 
 ```text
-SpaceMouse -> raw HID -> Python bridge -> localhost UDP -> Godot add-on
+SpaceMouse -> raw HID -> bridge (bin/spacemouse_bridge.exe) -> localhost UDP -> Godot add-on
 ```
 
 ## What changed in v0.2 (Stage 1)
@@ -287,6 +287,13 @@ zero Godot-side changes.
   editor-viewport mode stays experimental by design.
 - The bridge is a visible console window for now. Stage 5 adds a tray
   launcher with auto-start.
+
+### v1.0.2
+
+- **No Python needed anymore.** The bridge ships as a standalone
+  `bin/spacemouse_bridge.exe` (Python, hidapi and pywin32 bundled) and the
+  addon starts it first. If the exe is missing, the addon falls back to
+  Python exactly as before. Rebuild it with `tools/build_bridge_exe.bat`.
 
 ### v1.0.1
 

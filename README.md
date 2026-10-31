@@ -27,17 +27,15 @@ Godot does not currently provide native SpaceMouse navigation. Older approaches 
 
 - Windows 10 or Windows 11
 - Godot 4.x
-- Python 3
 - A 3Dconnexion SpaceMouse-compatible device
-- `hidapi` and `pywin32` Python packages (installed by the included helper)
+- No Python needed: the bridge ships as `bin/spacemouse_bridge.exe`
 
 ## Installation
 
 1. Download the latest release ZIP.
 2. Copy `addons/spacemouse_bridge` into your Godot project's `addons` directory.
-3. Run `addons/spacemouse_bridge/python_bridge/install_requirements.bat` once.
-4. In Godot, open **Project > Project Settings > Plugins** and enable **SpaceMouse Bridge**.
-5. Open the **SpaceMouse** dock and move the controller.
+3. In Godot, open **Project > Project Settings > Plugins** and enable **SpaceMouse Bridge**.
+4. Open the **SpaceMouse** dock and move the controller.
 
 The dock should report `src: hid`. The bridge normally starts automatically and remains hidden.
 
@@ -45,7 +43,9 @@ The dock should report `src: hid`. The bridge normally starts automatically and 
 
 - Run `run_bridge_fake.bat`. If the dock bars move, the Godot side works.
 - Run `run_probe.bat` to inspect raw HID, TDxInput, and local-service availability.
-- If the bridge exits immediately, rerun `install_requirements.bat` using the same Python installation Godot launches through `py -3`.
+- If the bridge exits immediately, check that your antivirus did not quarantine `bin/spacemouse_bridge.exe`.
+- Without the exe (for example a source checkout where it was deleted), the plugin falls back to Python 3: run `install_requirements.bat` once.
+- The `.bat` diagnostic helpers (fake mode, probe) still use Python.
 - If 3DxWare itself fails to start or repeatedly loses profiles, update it before testing the bridge.
 
 Full controls, troubleshooting, architecture, and version history are in [the add-on documentation](addons/spacemouse_bridge/README.md).
